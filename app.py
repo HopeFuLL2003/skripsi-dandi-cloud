@@ -12,6 +12,13 @@ doors = {
 def home():
     return "Cloud Server Running"
 
+@app.route("/test_unlock/<door_id>")
+def test_unlock(door_id):
+    if door_id in doors:
+        doors[door_id]["unlock"] = True
+        return "Unlock triggered"
+    return "Door not found"
+
 @app.route("/login", methods=["POST"])
 def login():
     data = request.json
@@ -35,4 +42,5 @@ def remote_status(door_id):
     return jsonify({"unlock": False})
 
 if __name__ == "__main__":
+
     app.run(host="0.0.0.0", port=5000)
