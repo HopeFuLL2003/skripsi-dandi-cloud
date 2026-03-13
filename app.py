@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
+from datetime import datetime
 
 app = Flask(__name__)
+
+access_logs = []
 
 doors = {
     "door1": {"username": "admin1", "password": "1234", "unlock": False},
@@ -44,3 +47,27 @@ def remote_status(door_id):
 if __name__ == "__main__":
 
     app.run(host="0.0.0.0", port=5000)
+
+@app.route("/log_access", methods=["POST"])
+def log_access():
+
+    data = request.json
+
+    log = {
+        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "door": data.get("door_id"),
+        "name": data.get("name"),
+        "card": data.get("card_uid"),
+        "method": data.get("method"),
+        "status": data.get("status")
+    }
+
+    access_logs.append(log)
+
+    print("NEW LOG:", log)
+
+    return jsonify({"status": "ok"})
+
+@app.route("/logs")
+def get_logs():
+    return jsonify(access_logs)
